@@ -2,7 +2,7 @@
 
 <a href='https://arxiv.org/pdf/2503.13147'><img src='https://img.shields.io/badge/Paper-arxiv-b31b1b.svg'></a> &nbsp;&nbsp;
 <a href='https://jiayi-fu.github.io/IPC-Dehaze_Homepage/'><img src='
-https://img.shields.io/badge/Project%20page-IPC%E2%80%91Dehaze-1bb41b.svg'></a> &nbsp;&nbsp;
+https://img.shields.io/badge/Project%20page-IPCDehaze-1bb41b.svg'></a> &nbsp;&nbsp;
 <a href='https://pan.baidu.com/s/1W4Mt_uZprSjxj1oH8MU59w'><img src='https://img.shields.io/badge/Results-BaiduYun(pwd:jfsp)-ffd700.svg'></a> &nbsp;&nbsp;
 <!-- <a href='https://pan.baidu.com/s/1W4Mt_uZprSjxj1oH8MU59w'><img src='https://img.shields.io/badge/Results-BaiduYun(pwd:jfsp)-ffd700.svg'></a> &nbsp;&nbsp;
  -->
