@@ -126,7 +126,7 @@ pretrained_models
 ```bash
 python inference.py -i examples -o results 
 ```
-The results can be found in [<a href="https://pan.baidu.com/s/1ps9dPmerWyXILxb6lkHihQ">Baidu Disk (pwd: huea)</a>]
+The results can be found in [<a href="https://pan.baidu.com/s/1W4Mt_uZprSjxj1oH8MU59w">Baidu Disk (pwd: jfsp)</a>]
 
 ## Train
 TBD
