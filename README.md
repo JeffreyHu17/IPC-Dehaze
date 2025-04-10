@@ -1,10 +1,9 @@
 # Iterative Predictor-Critic Code Decoding for Real-World Image Dehazing (CVPR2025)
 
 <a href='https://arxiv.org/pdf/2503.13147'><img src='https://img.shields.io/badge/Paper-arxiv-b31b1b.svg'></a> &nbsp;&nbsp;
+<a href='https://jiayi-fu.github.io/IPC-Dehaze_Homepage/static/pdfs/IPC_Dehaze-CN.pdf'><img src='https://img.shields.io/badge/Paper-中文版-blue'></a> &nbsp;&nbsp;
 <a href='https://jiayi-fu.github.io/IPC-Dehaze_Homepage/'><img src='https://img.shields.io/badge/Project page-IPC%E2%80%91Dehaze-1bb41b.svg'></a> &nbsp;&nbsp;
 <a href='https://pan.baidu.com/s/1W4Mt_uZprSjxj1oH8MU59w'><img src='https://img.shields.io/badge/Results-BaiduYun(pwd:jfsp)-ffd700.svg'></a> &nbsp;&nbsp;
-<!-- <a href='https://pan.baidu.com/s/1W4Mt_uZprSjxj1oH8MU59w'><img src='https://img.shields.io/badge/Results-BaiduYun(pwd:jfsp)-ffd700.svg'></a> &nbsp;&nbsp;
- -->
 
 
 This is the official PyTorch codes for the paper:
