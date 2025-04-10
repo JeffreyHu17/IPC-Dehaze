@@ -20,12 +20,11 @@ def main():
     args = parser.parse_args()
 
     num_iterations = args.n
-
+    os.makedirs(args.output, exist_ok=True)
 
     device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
 
-    net_g = DehazeTokenNet(codebook_params=[64, 1024, 256], blk_depth=16,LQ_stage=True,predictor_name='swinLayer').to(device)
-
+    net_g = DehazeTokenNet(codebook_params=[64, 1024, 256], blk_depth=16, LQ_stage=True, predictor_name='swinLayer').to(device)
     net_g.load_state_dict(torch.load(args.predictor_path)['params'], strict=True)
     net_g.eval()
     
