@@ -19,12 +19,13 @@ This is the official PyTorch codes for the paper:
 
 
 
-## TODO
-- [ ] Release training code
+## :runner: TODO
+- [x] Release training code
+- [x] 发布论文的中文版 (Release the Chinese version of the paper)
 - [x] Release results and testing code. More visual results can be fonud in the the <a href='https://jiayi-fu.github.io/IPC-Dehaze_Homepage/'>project page</a>. 
 
 
-## Dependencies and Installation
+## :wrench: Dependencies and Installation
 
 1. Clone repo
 
@@ -40,9 +41,9 @@ conda activate ipc
 pip install -r requirements.txt
 ```
 
-## Get Started
-### Prepare pretrained models & dataset
-1. Downloading pretrained checkpoints
+## Quick Inference
+### Step1: Downloading pretrained checkpoints
+Download `predictor.pth` and `critic.pth` and place them in the following directories: `pretrained_models`
 <table>
 <thead>
 <tr>
@@ -75,7 +76,15 @@ pip install -r requirements.txt
 </tbody>
 </table>
 
-2. Preparing data for training(same to <a href="https://github.com/RQ-Wu/RIDCP_dehazing">RIDCP</a>)
+### Step2: Running testing command
+```bash
+python inference.py -i examples -o results 
+```
+The results can be found in [<a href="https://pan.baidu.com/s/1W4Mt_uZprSjxj1oH8MU59w">Baidu Disk (pwd: jfsp)</a>]
+
+## :muscle: Train
+### Step1: Prepare training dataset
+Preparing data for training(same to <a href="https://github.com/RQ-Wu/RIDCP_dehazing">RIDCP</a>)
 <table>
 <thead>
 <tr>
@@ -104,37 +113,41 @@ pip install -r requirements.txt
 </tbody>
 </table>
 
-3. The final directory structure will be arranged as:
+The final directory structure will be arranged as:
 ```
 datasets
-    |- rgb_500
-        |- xxx.jpg
-        |- ...
-    |- depth_500
-        |- xxx.npy
-        |- ...
-    |- HQ_sub
+    |- train
+        |- rgb_500
+            |- xxx.jpg
+            |- ...
+        |- depth_500
+            |- xxx.npy
+            |- ...
+        |- HQ_sub
 
 pretrained_models
     |- net_critic.pth
     |- net_predictor.pth
 
 ```
-## Quick Inference
+### Step2: Running training command
+For training Code-Predictor:
 ```bash
-python inference.py -i examples -o results 
+train_predictor.sh
 ```
-The results can be found in [<a href="https://pan.baidu.com/s/1W4Mt_uZprSjxj1oH8MU59w">Baidu Disk (pwd: jfsp)</a>]
+For training Code-Critic:
+```bash
+train_critic.sh
+```
 
-## Train
-TBD
+
 ## Quantitative Evaluation
 ![quan_img](.assets/quantitative_results.png)
-## License
+## 📜 License
 
 This project is licensed under the Pi-Lab License 1.0 - see the [LICENSE](https://github.com/modyu-liu/FaceMe/blob/main/LICENSE) file for details.
 
-## Citation
+## :book: Citation
 
 If you find our repo useful for your research, please consider citing our paper:
 
@@ -147,7 +160,7 @@ year={2025}
 }
 ```
 
-## Contact
+## :postbox: Contact
 
 For technical questions, please contact `fujiayi[AT]mail.nankai.edu.cn`
 

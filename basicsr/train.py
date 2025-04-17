@@ -27,10 +27,10 @@ def mkdir_and_rename(path):
     """
     if osp.exists(path):
         new_name = path + '_archived_' + get_time_str()
-        new_name = new_name.replace('tb_logger', 'tb_logger_archived')
         print(f'Path already exists. Rename it to {new_name}', flush=True)
-        shutil.move(path, new_name)
+        os.rename(path, new_name)
     os.makedirs(path, exist_ok=True)
+
 
 
 def init_tb_loggers(opt):

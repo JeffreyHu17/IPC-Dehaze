@@ -3,6 +3,9 @@ pretrained_models/*
 experiments/*
 *.DS_Store
 .idea
+datasets/*
+tb_logger/*
+results/*
 
 # Byte-compiled / optimized / DLL files
 __pycache__/

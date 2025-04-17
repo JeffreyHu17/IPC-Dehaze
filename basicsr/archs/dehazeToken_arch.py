@@ -432,7 +432,7 @@ class DehazeTokenNet(nn.Module):
         #bchw
         feat_to_quant = self.vqgan.before_quant(x)
 
-        hq_feats = self.vqgan.multiscale_encoder(hq_feats)[::-1]
+        # hq_feats = self.vqgan.multiscale_encoder(hq_feats)[::-1]
         masked_feats = token_mask * feat_to_quant + ~token_mask * hq_feats
 
         logits = self.transformer.forward(masked_feats,return_embeds=False)
