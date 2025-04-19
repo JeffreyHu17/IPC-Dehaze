@@ -41,7 +41,7 @@ conda activate ipc
 pip install -r requirements.txt
 ```
 
-## Quick Inference
+## 🚀 Quick Inference
 ### Step1: Downloading pretrained checkpoints
 Download `predictor.pth` and `critic.pth` and place them in the following directories: `pretrained_models`
 <table>
@@ -141,7 +141,7 @@ train_critic.sh
 ```
 
 
-## Quantitative Evaluation
+## 💻 Quantitative Evaluation
 ![quan_img](.assets/quantitative_results.png)
 ## 📜 License
 
