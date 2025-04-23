@@ -1,4 +1,3 @@
-options/*
 pretrained_models/*
 experiments/*
 *.DS_Store

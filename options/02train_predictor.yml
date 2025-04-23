@@ -1,0 +1,164 @@
+name: 02_train_predictor
+model_type: PredictorModel 
+scale: 1
+num_gpu: 4 # set num_gpu: 0 for cpu mode
+manual_seed: 0
+
+# dataset and data loader settings
+datasets:
+  train:
+    name: General_Image_Train
+    type: HazeOnlineDataset
+    dataroot_gt: datasets/train/rgb_500
+    dataroot_depth: datasets/train/depth_500
+    beta_range: [0.3, 1.5]
+    A_range: [0.25, 1.0]
+    color_p: 1.0
+    color_range: [-0.025, 0.025]
+    io_backend:
+      type: disk
+
+    use_resize_crop: true
+    use_hflip: true
+    use_rot: false
+    gt_size: 256
+    # data loader
+    use_shuffle: true
+    batch_size_per_gpu: 4
+    num_worker_per_gpu: 4
+    dataset_enlarge_ratio: 1
+
+    prefetch_mode: ~
+    num_prefetch_queue: 4
+
+  val:
+    name: validation
+    type: HazeOnlineDataset
+    dataroot_gt: datasets/train/rgb_500
+    dataroot_depth: datasets/train/depth_500
+    beta_range: [0.3, 1.5]
+    A_range: [0.25, 1.0]
+    color_p: 1.0
+    color_range: [-0.025, 0.025]
+    io_backend:
+      type: disk
+
+
+# network structures
+network_g:
+  type: DehazeTokenNet 
+  gt_resolution: 256
+  norm_type: 'gn'
+  act_type: 'silu'
+  codebook_params: [64, 1024, 256]
+  predictor_name: swinLayer 
+  LQ_stage: true
+  code_only: false
+  detach_16: true
+  frozen_module_keywords: ['quantize', 'decoder', 'after_quant', 'out_conv']
+
+network_hq:
+  type: VQGAN 
+  gt_resolution: 256
+  norm_type: 'gn'
+  act_type: 'silu'
+  codebook_params: [64, 1024, 256]
+  LQ_stage: false
+ 
+network_d:
+  type: UNetDiscriminatorSN 
+  num_in_ch: 3
+
+
+# path
+path:
+  pretrain_network_hq: pretrained_models/vqgan.pth
+  pretrain_network_g: ~
+  pretrain_network_d: pretrained_models/vqgan_d.pth
+  strict_load: false 
+  # resume_state: ~
+
+# training settings
+train:
+  optim_g:
+    type: Adam
+    lr: !!float 1e-4
+    weight_decay: 0
+    betas: [0.9, 0.99]
+  optim_d:
+    type: Adam
+    lr: !!float 4e-4
+    weight_decay: 0
+    betas: [0.9, 0.99]
+
+  scheduler:
+    type: MultiStepLR
+    # milestones: [50000, 100000, 200000, 300000]
+    # gamma: 1
+    milestones: [50000, 100000, 150000, 200000, 250000, 300000, 350000]
+    gamma: 1 
+
+  total_iter: 103300
+  warmup_iter: -1  # no warm up
+
+  # losses
+  pixel_opt:
+    type: L1Loss
+    loss_weight: 1.0 
+    reduction: mean
+
+  perceptual_opt:
+    type: LPIPSLoss
+    loss_weight: !!float 1.0 
+    
+  gan_opt:
+    type: GANLoss
+    gan_type: hinge
+    real_label_val: 1.0
+    fake_label_val: 0.0
+    loss_weight: 0.1
+
+  cross_entropy_opt:
+    token_weight: 1
+
+
+  net_d_iters: 1
+  net_d_init_iters: !!float 5000
+
+# validation settings·
+val:
+  val_freq: !!float 800000
+  save_img: true
+
+  key_metric: psnr
+  metrics:
+    psnr: # metric name, can be arbitrary
+      type: psnr 
+      crop_border: 4
+      test_y_channel: true
+    ssim:
+      type: ssim 
+      crop_border: 4
+      test_y_channel: true
+    # lpips:
+    #   type: lpips 
+    #   better: lower
+# logging settings
+logger:
+  print_freq: 100
+  save_checkpoint_freq: !!float 1e4
+  save_latest_freq: !!float 1e5
+  show_tf_imgs_freq: !!float 1e3
+  use_tb_logger: true
+
+# wandb:
+    # project: ESRGAN
+    # resume_id: ~
+
+# dist training settings
+dist_params:
+  backend: nccl
+  port: 16500 #29500
+
+find_unused_parameters: true
+
