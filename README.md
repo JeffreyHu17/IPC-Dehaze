@@ -133,11 +133,11 @@ pretrained_models
 ### Step2: Running training command
 For training Code-Predictor:
 ```bash
-train_predictor.sh
+sh train_predictor.sh
 ```
 For training Code-Critic:
 ```bash
-train_critic.sh
+sh train_critic.sh
 ```
 
 
