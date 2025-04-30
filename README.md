@@ -155,7 +155,7 @@ If you find our repo useful for your research, please consider citing our paper:
 @inproceedings{fu2025ipcdehaze,
 title={Iterative Predictor-Critic Code Decoding for Real-World Image Dehazing},
 author={Fu, Jiayi and Liu, Siyu and Liu, Zikun and Guo, Chun-Le and Park, Hyunhee and Wu, Ruiqi and Wang, Guoqing and Li, Chongyi},
- booktitle={Proceedings of the IEEE/CVF Conference on Computer Vision and Pattern Recognition (CVPR)},
+booktitle={Proceedings of the IEEE/CVF Conference on Computer Vision and Pattern Recognition (CVPR)},
 year={2025}
 }
 ```
