@@ -152,10 +152,10 @@ This project is licensed under the Pi-Lab License 1.0 - see the [LICENSE](https:
 If you find our repo useful for your research, please consider citing our paper:
 
 ```bibtex
-@Article{fu2025iterative,
+@inproceedings{fu2025ipcdehaze,
 title={Iterative Predictor-Critic Code Decoding for Real-World Image Dehazing},
 author={Fu, Jiayi and Liu, Siyu and Liu, Zikun and Guo, Chun-Le and Park, Hyunhee and Wu, Ruiqi and Wang, Guoqing and Li, Chongyi},
-journal={arXiv preprint arXiv:2503.13147},
+ booktitle={Proceedings of the IEEE/CVF Conference on Computer Vision and Pattern Recognition (CVPR)},
 year={2025}
 }
 ```
