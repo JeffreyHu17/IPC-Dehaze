@@ -94,12 +94,12 @@ The results can be found in [<a href="https://pan.baidu.com/s/1W4Mt_uZprSjxj1oH8
 <tr>
     <td>URHI</td>
     <th>
-    <a href="https://utexas.app.box.com/s/2yekra41udg9rgyzi3ysi513cps621qz">Download :link:</a></th>
+    <a href="https://utexas.app.box.com/s/2yekra41udg9rgyzi3ysi513cps621qz">Download</a></th>
 </tr>
 <tr>
     <td>RTTS</td>
     <th>
-    <a href="https://utexas.app.box.com/s/7hu094vwkw0cwowv5wijwv9pure2fvup?page=2">Download :link:</a></th>
+    <a href="https://utexas.app.box.com/s/7hu094vwkw0cwowv5wijwv9pure2fvup?page=2">Download</a></th>
 </tr>
 </tbody>
 </table>
