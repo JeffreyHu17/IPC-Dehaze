@@ -17,11 +17,12 @@ def main():
     parser.add_argument('-o','--output', type=str, default='results', help='output test image folder')
     parser.add_argument('-n', type=int, default=8, help='num_iterations')
     parser.add_argument('--max_size', type=int, default=1500, help='max_size')
+    
     args = parser.parse_args()
-
+    
     num_iterations = args.n
     os.makedirs(args.output, exist_ok=True)
-
+    
     device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
 
     net_g = DehazeTokenNet(codebook_params=[64, 1024, 256], blk_depth=16, LQ_stage=True, predictor_name='swinLayer').to(device)

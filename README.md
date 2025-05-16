@@ -82,6 +82,28 @@ python inference.py -i examples -o results
 ```
 The results can be found in [<a href="https://pan.baidu.com/s/1W4Mt_uZprSjxj1oH8MU59w">Baidu Disk (pwd: jfsp)</a>]
 
+### Option: Downloading test datasets
+<table>
+<thead>
+<tr>
+    <th> Dataset </th>
+    <th>:link: Download Links </th>
+</tr>
+</thead>
+<tbody>
+<tr>
+    <td>URHI</td>
+    <th>
+    <a href="https://utexas.app.box.com/s/2yekra41udg9rgyzi3ysi513cps621qz">Download :link:</a></th>
+</tr>
+<tr>
+    <td>RTTS</td>
+    <th>
+    <a href="https://utexas.app.box.com/s/7hu094vwkw0cwowv5wijwv9pure2fvup?page=2">Download :link:</a></th>
+</tr>
+</tbody>
+</table>
+
 ## :muscle: Train
 ### Step1: Prepare training dataset
 Preparing data for training(same to <a href="https://github.com/RQ-Wu/RIDCP_dehazing">RIDCP</a>)
