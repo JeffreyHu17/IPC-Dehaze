@@ -6,7 +6,7 @@ import cv2
 import glob
 import os
 import torch
-from basicsr.utils import parallel_decode_my
+from basicsr.utils import parallel_decode
 from basicsr.archs.dehazeToken_arch import DehazeTokenNet,Critic
 
 def main():
@@ -89,7 +89,7 @@ def main():
             
             mask_tokens=-1*torch.ones(b,h*w).to(feat_to_quant.device).long()
 
-            output_tokens,mask_tokens = parallel_decode_my.decode_critic_only(
+            output_tokens,mask_tokens = parallel_decode.decode_critic(
                 mask_tokens,
                 feat_to_quant,
                 tokens_to_logits,

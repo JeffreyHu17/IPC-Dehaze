@@ -55,7 +55,6 @@ network_g:
   norm_type: 'gn'
   act_type: 'silu'
   codebook_params: [64, 1024, 256]
-  predictor_name: swinLayer
 
   LQ_stage: true
   code_only: true

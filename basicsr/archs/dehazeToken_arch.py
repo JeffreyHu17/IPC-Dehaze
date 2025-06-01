@@ -9,109 +9,7 @@ from .network_swinir import RSTB
 from .vqgan import VQGAN
 from .fema_utils import ResBlock
 from einops.layers.torch import Rearrange
-from basicsr.archs.network_swinir import SwinTransformerBlock
 
-class VectorQuantizer(nn.Module):
-    """
-    see https://github.com/MishaLaskin/vqvae/blob/d761a999e2267766400dc646d82d3ac3657771d4/models/quantizer.py
-    ____________________________________________
-    Discretization bottleneck part of the VQ-VAE.
-    Inputs:
-    - n_e : number of embeddings
-    - e_dim : dimension of embedding
-    - beta : commitment cost used in loss term, beta * ||z_e(x)-sg[e]||^2
-    _____________________________________________
-    """
-    def __init__(self, n_e, e_dim, beta=0.25, LQ_stage=False):
-        super().__init__()
-        self.n_e = int(n_e)
-        self.e_dim = int(e_dim)
-        self.LQ_stage = LQ_stage
-        self.beta = beta
-        self.embedding = nn.Embedding(self.n_e, self.e_dim)
-        self.embedding.weight.data.uniform_(-1.0 / self.n_e, 1.0 / self.n_e)
-
-    def dist(self, x, y):
-        return torch.sum(x ** 2, dim=1, keepdim=True) + \
-                    torch.sum(y**2, dim=1) - 2 * \
-                    torch.matmul(x, y.t())
-
-    def gram_loss(self, x, y):
-        b, h, w, c = x.shape
-        x = x.reshape(b, h * w, c)
-        y = y.reshape(b, h * w, c)
-
-        gmx = x.transpose(1, 2) @ x / (h * w)
-        gmy = y.transpose(1, 2) @ y / (h * w)
-
-        return (gmx - gmy).square().mean()
-
-    def forward(self, z, gt_indices=None, current_iter=None):
-        """
-        Args:
-            z: input features to be quantized, z (continuous) -> z_q (discrete)
-               z.shape = (batch, channel, height, width)
-            gt_indices: feature map of given indices, used for visualization. 
-        """
-        # reshape z -> (batch, height, width, channel) and flatten
-        z = z.permute(0, 2, 3, 1).contiguous()
-        z_flattened = z.view(-1, self.e_dim)
-
-        codebook = self.embedding.weight
-
-        d = self.dist(z_flattened, codebook)
-
-        # find closest encodings
-        min_encoding_indices = torch.argmin(d, dim=1).unsqueeze(1)
-        min_encodings = torch.zeros(min_encoding_indices.shape[0],
-                                    codebook.shape[0]).to(z)
-        min_encodings.scatter_(1, min_encoding_indices, 1)
-
-        if gt_indices is not None:
-            gt_indices = gt_indices.reshape(-1)
-
-            gt_min_indices = gt_indices.reshape_as(min_encoding_indices)
-            gt_min_onehot = torch.zeros(gt_min_indices.shape[0],
-                                        codebook.shape[0]).to(z)
-            gt_min_onehot.scatter_(1, gt_min_indices, 1)
-
-            z_q_gt = torch.matmul(gt_min_onehot, codebook)
-            z_q_gt = z_q_gt.view(z.shape)
-
-        # get quantized latent vectors
-        z_q = torch.matmul(min_encodings, codebook)
-        z_q = z_q.view(z.shape)
-
-        e_latent_loss = torch.mean((z_q.detach() - z)**2)
-        q_latent_loss = torch.mean((z_q - z.detach())**2)
-
-        if self.LQ_stage and gt_indices is not None:
-            codebook_loss = self.beta * ((z_q_gt.detach() - z)**2).mean()
-            texture_loss = self.gram_loss(z, z_q_gt.detach())
-            codebook_loss = codebook_loss + texture_loss
-        else:
-            codebook_loss = q_latent_loss + e_latent_loss * self.beta
-
-        # preserve gradients
-        z_q = z + (z_q - z).detach()
-
-        # reshape back to match original input shape
-        z_q = z_q.permute(0, 3, 1, 2).contiguous()
-
-        return z_q, codebook_loss, min_encoding_indices.reshape(
-            z_q.shape[0], 1, z_q.shape[2], z_q.shape[3])
-
-    def get_codebook_entry(self, indices):
-        b, _, h, w = indices.shape
-
-        indices = indices.flatten().to(self.embedding.weight.device)
-        min_encodings = torch.zeros(indices.shape[0], self.n_e).to(indices)
-        min_encodings.scatter_(1, indices[:, None], 1)
-
-        # get quantized latent vectors
-        z_q = torch.matmul(min_encodings.float(), self.embedding.weight)
-        z_q = z_q.view(b, h, w, -1).permute(0, 3, 1, 2).contiguous()
-        return z_q
 
 
 def _get_activation_fn(activation):
@@ -124,7 +22,7 @@ def _get_activation_fn(activation):
         return F.glu
     raise RuntimeError(F"activation should be relu/gelu, not {activation}.")
 
-class SwinLayers(nn.Module):
+class Predictor(nn.Module):
     def __init__(self, input_resolution=(32, 32), embed_dim=256, 
                 blk_depth=6,
                 num_heads=8,
@@ -150,8 +48,8 @@ class SwinLayers(nn.Module):
         x=self.norm_out(x)
         logits = self.idx_pred_layer(x)    
         
-    
         return logits
+    
 class Swich(nn.Module):
     def __init__(self) -> None:
         super().__init__()
@@ -221,106 +119,6 @@ class TransformerSALayer(nn.Module):
         return tgt
 
 
-class Transformer(nn.Module):
-    def __init__(
-        self,
-        codebook_size=1024,
-        num_layers=9,
-        num_embeds=512,
-        num_heads=8,
-    ) -> None:
-        super().__init__()
-        intermediate_size=num_embeds*2
-        # transformer
-        self.ft_layers = nn.Sequential(*[
-            TransformerSALayer(embed_dim=num_embeds,
-                               nhead=num_heads,
-                               dim_mlp=intermediate_size,
-                               dropout=0.0) for _ in range(num_layers)
-        ])
-        # self.tok_emb = nn.Embedding(codebook_size, num_embeds)
-        self.norm_out=nn.LayerNorm(num_embeds)
-        # logits_predict head
-        self.idx_pred_layer = nn.Sequential(
-            
-            nn.Linear(num_embeds, codebook_size, bias=False))
-        
-        self.token_critic =  nn.Sequential(nn.Linear(num_embeds, 1),Rearrange('... 1 -> ...'))
-        
-
-    def forward(self, x ,token_critic=False):
-        
-        x =x.flatten(2).permute(2, 0, 1)
-        query_emb = x
-        # Transformer encoder
-        for layer in self.ft_layers:
-            query_emb = layer(query_emb)
-        # output logits
-        query_emb=self.norm_out(query_emb)
-        logits = self.idx_pred_layer(query_emb)  # (hw)bn
-        logits = logits.permute(1, 0, 2)  # (hw)bn -> b(hw)n 
-            
-        if token_critic == False:
-            return logits
-        
-        logits_mask=self.token_critic(query_emb)
-        logits_mask = logits_mask.permute(1, 0)  # (hw)b -> b(hw)
-    
-        return logits,logits_mask
-
-
-class Swinformer(nn.Module):
-    def __init__(
-        self,
-        conv_in = 512,
-        input_resolution=(32, 32), embed_dim=256, 
-        blk_depth=12,
-        num_heads=8,
-        window_size=8,           
-        codebook_size=1024,
-    ) -> None:
-        super().__init__()
-        self.conv_in = nn.Conv2d(conv_in,embed_dim,kernel_size=1)
-        self.ft_layers = nn.ModuleList([
-            SwinTransformerBlock(dim=embed_dim, input_resolution=input_resolution,
-                                 num_heads=num_heads, window_size=window_size,
-                                 )
-            for _ in range(blk_depth)])
-        
-        # self.tok_emb = nn.Embedding(codebook_size, num_embeds)
-        
-        self.norm_out=nn.LayerNorm(embed_dim)
-
-        self.idx_pred_layer = nn.Sequential(
-            nn.Linear(embed_dim, codebook_size, bias=False))
-        self.cri_pred_layer = nn.Sequential(
-            nn.Sequential(nn.Linear(embed_dim, 1),Rearrange('... 1 -> ...')))       
-
-    def forward(self, x ,return_embeds=False,return_critic=False):
-        x = self.conv_in(x)
-        b, c, h, w = x.shape 
-            
-        x = x.reshape(b, c, h*w).transpose(1, 2)#b(hw)c
-        
-        for m in self.ft_layers:
-            x = m(x, (h, w))
-            
-        x = self.norm_out(x)
-  
-        if return_embeds:
-            return x
-        logits = self.idx_pred_layer(x)
-        if not return_critic:
-            return logits
-        mask_logits=self.cri_pred_layer(x)
-        
-        return logits,mask_logits
-       
-    def token_logits(self,embed):
-        return self.idx_pred_layer(embed)  
-    def mask_logits(self,embed):
-        return self.cri_pred_layer(embed)  
-
 @ARCH_REGISTRY.register()
 class Critic(nn.Module):
     def __init__(self, input_resolution=(32, 32), embed_dim=256, 
@@ -362,7 +160,6 @@ class DehazeTokenNet(nn.Module):
                  use_quantize=True,
                  use_semantic_loss=False,
                  use_residual=True,
-                 predictor_name='transformer',
                  blk_depth=12,
                  
                  **ignore_kwargs):
@@ -399,14 +196,7 @@ class DehazeTokenNet(nn.Module):
                            LQ_stage, norm_type, act_type, use_quantize,
                            use_semantic_loss, use_residual)
         if LQ_stage:
-            if predictor_name=='transformer':
-                self.transformer = Transformer(**ignore_kwargs)
-            elif predictor_name == 'swin':
-                self.transformer = Swinformer(blk_depth=blk_depth)
-            elif predictor_name == 'swinLayer':
-                self.transformer = SwinLayers()
-            elif predictor_name == 'critic':
-                self.transformer = Critic()
+            self.transformer = Predictor()
         self.LQ_stage = LQ_stage
 
         self.fuse_convs_dict = nn.ModuleDict()
@@ -474,28 +264,3 @@ class DehazeTokenNet(nn.Module):
             x = m(x)
         out_img = self.vqgan.out_conv(x)
         return out_img
-
-    # @torch.no_grad()
-    # def test(self, input):
-       
-    #     # paddinqg to multiple of window_size * 8
-    #     wsz = 32
-    #     _, _, h_old, w_old = input.shape
-    #     h_pad = (h_old // wsz + 1) * wsz - h_old
-    #     w_pad = (w_old // wsz + 1) * wsz - w_old
-    #     input = torch.cat([input, torch.flip(input, [2])],
-    #                       2)[:, :, :h_old + h_pad, :]
-    #     input = torch.cat([input, torch.flip(input, [3])],
-    #                       3)[:, :, :, :w_old + w_pad]
-        
-
-    #     # out_img, codebook_loss, semantic_loss, indices=self.vqgan(input)
-    #     # logits, feat_to_quant,= self.inference(input,t_map,alpha=0,code_only=True,detach_16=False)
-    #     # output_token=logits.argmax(dim=2)
-    #     # b,c,h,w=feat_to_quant.shape
-    #     # out_img=self.decode_indices(output_token.reshape(1,1,h,w))
-    #     logits, feat_to_quant,out_img,= self.inference(input,alpha=1,code_only=False,detach_16=False)
-
-    #     output = out_img
-    #     output = output[..., :h_old , :w_old ]
-    #     return output
