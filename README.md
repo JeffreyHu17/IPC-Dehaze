@@ -9,7 +9,7 @@
 This is the official PyTorch codes for the paper:
 
 >**Iterative Predictor-Critic Code Decoding for Real-World Image Dehazing**<br>  [Jiayi Fu<sup>1</sup>](https://github.com/Jiayi-Fu), [Siyu Liu<sup>1</sup>](https://github.com/modyu-liu), Zikun Liu<sup>3</sup>, [Chun-Le Guo<sup>1,2</sup>](https://mmcheng.net/clguo/), Hyunhee Park<sup>4</sup>, [Ruiqi Wu<sup>1</sup>](https://rq-wu.github.io/), Guoqing Wang<sup>5</sup>, [Chongyi Li<sup>*,1,2</sup>](https://li-chongyi.github.io/)  
-> <sup>1</sup>VPIC, CS, Nankai University, <sup>2</sup>NKIARI, Shenzhen Futian<sup>3</sup>, Samsung R&D Institute China-Beijing, <sup>4</sup> CIG, Samsung Electronics,<sup>5</sup> Donghai Laboratory, Zhoushan, Zhejiang. <sup>*</sup> Indicates Corresponding Author  
+> <sup>1</sup>VCIP, CS, Nankai University, <sup>2</sup>NKIARI, Shenzhen Futian<sup>3</sup>, Samsung R&D Institute China-Beijing, <sup>4</sup> CIG, Samsung Electronics,<sup>5</sup> Donghai Laboratory, Zhoushan, Zhejiang. <sup>*</sup> Indicates Corresponding Author  
 
 
 ![teaser_img](.assets/overview.png)
